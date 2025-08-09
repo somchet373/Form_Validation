@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คำร้องโอนย้ายสาขาวิชา</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-6">คำร้องขอโอนย้ายสาขาวิชาต่างคณะ</h2>
+
+    <form id="transferForm" novalidate>
+      <!-- วันที่ -->
+      <div class="mb-4">
+        <label class="block font-medium">วันที่</label>
+        <input type="date" id="date" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-date"></p>
+      </div>
+
+      <!-- ชื่อ-นามสกุล -->
+      <div class="mb-4">
+        <label class="block font-medium">ชื่อ-นามสกุล</label>
+        <input type="text" id="fullname" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-fullname"></p>
+      </div>
+
+      <!-- รหัสนักศึกษา -->
+      <div class="mb-4">
+        <label class="block font-medium">รหัสนักศึกษา</label>
+        <input type="text" id="studentId" maxlength="8" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-studentId"></p>
+      </div>
+
+      <!-- เบอร์มือถือ -->
+      <div class="mb-4">
+        <label class="block font-medium">เบอร์มือถือ</label>
+        <input type="text" id="phone" class="w-full border rounded p-2" placeholder="0xxxxxxxxx">
+        <p class="text-red-500 text-sm" id="error-phone"></p>
+      </div>
+
+      <!-- หลักสูตร -->
+      <div class="mb-4">
+        <label class="block font-medium">หลักสูตร</label>
+        <select id="program" class="w-full border rounded p-2">
+          <option value="">-- เลือกหลักสูตร --</option>
+          <option value="4">4 ปี</option>
+          <option value="2">4 ปีเทียบเข้า (2 ปี)</option>
+        </select>
+        <p class="text-red-500 text-sm" id="error-program"></p>
+      </div>
+
+      <!-- ภาคการเรียน -->
+      <div class="mb-4">
+        <label class="block font-medium">ภาคการเรียน</label>
+        <select id="semester" class="w-full border rounded p-2">
+          <option value="">-- เลือกภาคการเรียน --</option>
+          <option value="normal">ภาคปกติ</option>
+          <option value="parttime">ภาคสมทบ</option>
+        </select>
+        <p class="text-red-500 text-sm" id="error-semester"></p>
+      </div>
+
+      <!-- สาขาวิชาเดิม -->
+      <div class="mb-4">
+        <label class="block font-medium">สาขาวิชาเดิม</label>
+        <input type="text" id="oldMajor" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-oldMajor"></p>
+      </div>
+
+      <!-- คณะเดิม -->
+      <div class="mb-4">
+        <label class="block font-medium">คณะเดิม</label>
+        <input type="text" id="oldFaculty" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-oldFaculty"></p>
+      </div>
+
+      <!-- สาขาที่จะโอน -->
+      <div class="mb-4">
+        <label class="block font-medium">สาขาที่จะโอนย้าย</label>
+        <input type="text" id="newMajor" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-newMajor"></p>
+      </div>
+
+      <!-- เหตุผล -->
+      <div class="mb-4">
+        <label class="block font-medium">เหตุผลการโอนย้าย</label>
+        <textarea id="reason" class="w-full border rounded p-2"></textarea>
+        <p class="text-red-500 text-sm" id="error-reason"></p>
+      </div>
+
+      <!-- หน่วยกิต -->
+      <div class="mb-4">
+        <label class="block font-medium">หน่วยกิตสะสม</label>
+        <input type="number" id="credits" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-credits"></p>
+      </div>
+
+      <!-- GPA -->
+      <div class="mb-4">
+        <label class="block font-medium">เกรดเฉลี่ยสะสม (GPA)</label>
+        <input type="number" step="0.01" id="gpa" class="w-full border rounded p-2">
+        <p class="text-red-500 text-sm" id="error-gpa"></p>
+      </div>
+
+      <!-- ปุ่ม -->
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">ส่งคำร้อง</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("transferForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      document.querySelectorAll("p.text-red-500").forEach(el => el.textContent = "");
+
+      let valid = true;
+
+      const date = document.getElementById("date").value;
+      const fullname = document.getElementById("fullname").value.trim();
+      const studentId = document.getElementById("studentId").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const program = document.getElementById("program").value;
+      const semester = document.getElementById("semester").value;
+      const oldMajor = document.getElementById("oldMajor").value.trim();
+      const oldFaculty = document.getElementById("oldFaculty").value.trim();
+      const newMajor = document.getElementById("newMajor").value.trim();
+      const reason = document.getElementById("reason").value.trim();
+      const credits = parseInt(document.getElementById("credits").value);
+      const gpa = parseFloat(document.getElementById("gpa").value);
+
+      // Basic validation
+      if (!date) { document.getElementById("error-date").textContent = "กรุณาเลือกวันที่"; valid = false; }
+      if (!fullname) { document.getElementById("error-fullname").textContent = "กรุณากรอกชื่อ-นามสกุล"; valid = false; }
+      if (!/^\d{8}$/.test(studentId)) { document.getElementById("error-studentId").textContent = "รหัสนักศึกษาต้องเป็นตัวเลข 8 หลัก"; valid = false; }
+      if (!/^0\d{9}$/.test(phone)) { document.getElementById("error-phone").textContent = "เบอร์โทรไม่ถูกต้อง"; valid = false; }
+      if (!program) { document.getElementById("error-program").textContent = "กรุณาเลือกหลักสูตร"; valid = false; }
+      if (!semester) { document.getElementById("error-semester").textContent = "กรุณาเลือกภาคการเรียน"; valid = false; }
+      if (!oldMajor) { document.getElementById("error-oldMajor").textContent = "กรุณากรอกสาขาวิชาเดิม"; valid = false; }
+      if (!oldFaculty) { document.getElementById("error-oldFaculty").textContent = "กรุณากรอกคณะเดิม"; valid = false; }
+      if (!newMajor) { document.getElementById("error-newMajor").textContent = "กรุณากรอกสาขาที่จะโอนย้าย"; valid = false; }
+      if (reason.length < 10) { document.getElementById("error-reason").textContent = "เหตุผลต้องมีอย่างน้อย 10 ตัวอักษร"; valid = false; }
+
+      // เงื่อนไขคุณสมบัติ
+      if (isNaN(credits) || credits <= 0) { document.getElementById("error-credits").textContent = "กรุณากรอกหน่วยกิตเป็นตัวเลข"; valid = false; }
+      if (isNaN(gpa) || gpa <= 0) { document.getElementById("error-gpa").textContent = "กรุณากรอก GPA"; valid = false; }
+
+      if (program === "2") { // 4 ปีเทียบเข้า (2 ปี)
+        if (credits < 18) { document.getElementById("error-credits").textContent = "หลักสูตร 2 ปี ต้องมีหน่วยกิต ≥ 18"; valid = false; }
+        if (gpa < 2.00) { document.getElementById("error-gpa").textContent = "GPA ต้อง ≥ 2.00"; valid = false; }
+      }
+
+      if (program === "4") { // 4 ปี
+        if (credits < 30) { document.getElementById("error-credits").textContent = "หลักสูตร 4 ปี ต้องมีหน่วยกิต ≥ 30"; valid = false; }
+        if (gpa < 2.00) { document.getElementById("error-gpa").textContent = "GPA ต้อง ≥ 2.00"; valid = false; }
+      }
+
+      if (valid) {
+        alert("ส่งคำร้องสำเร็จ ✅");
+      }
+    });
+  </script>
+</body>
+</html>
